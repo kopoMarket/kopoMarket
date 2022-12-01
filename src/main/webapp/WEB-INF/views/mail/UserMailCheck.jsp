@@ -3,6 +3,9 @@
 <!DOCTYPE html>
 <html lang="zxx">
 
+
+<%--메일 인증 --%>
+
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Ogani Template">
@@ -36,115 +39,42 @@
 
 
     <style>
-        @import url(https://fonts.googleapis.com/css?family=Roboto:300);
+        .signup2 {
 
-        .login-page {
-            width: 360px;
-            padding: 8% 0 0;
-            margin: auto;
-        }
-        .form {
-            position: relative;
-            z-index: 1;
-            background: #FFFFFF;
-            max-width: 360px;
-            margin: 0 auto 100px;
-            padding: 45px;
-            text-align: center;
-            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-        }
-        .form input {
-            font-family: "Roboto", sans-serif;
-            outline: 0;
-            background: #f2f2f2;
-            width: 100%;
-            border: 0;
-            margin: 0 0 15px;
-            padding: 15px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        .form button {
-            font-family: "Roboto", sans-serif;
-            text-transform: uppercase;
-            outline: 0;
-            background: #4CAF50;
-            width: 100%;
-            border: 0;
-            padding: 15px;
-            color: #FFFFFF;
-            font-size: 14px;
-            -webkit-transition: all 0.3 ease;
-            transition: all 0.3 ease;
-            cursor: pointer;
-        }
-        .form button:hover,.form button:active,.form button:focus {
-            background: #43A047;
-        }
-        .form .message {
-            margin: 15px 0 0;
-            color: #b3b3b3;
-            font-size: 12px;
-        }
-        .form .message a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-        .form .register-form {
-            display: none;
-        }
-
-        .container:before, .container:after {
-            content: "";
-            display: block;
-            clear: both;
-        }
-        .container .info {
-            margin: 50px auto;
+            height: 600px;
             text-align: center;
         }
-        .container .info h1 {
-            margin: 0 0 15px;
-            padding: 0;
-            font-size: 36px;
-            font-weight: 300;
-            color: #1a1a1a;
+        .signupbutton {
+            color: #ffffff;
+            font-size: 12.8px;
+            background: #F8B600;
+            margin: 10px 10px 0px 0px;
+            padding: 0px 30px;
+            height: 30px;
+            width: 160px;
+            border-radius: 20px;
         }
-        .container .info span {
-            color: #4d4d4d;
-            font-size: 12px;
-        }
-        .container .info span a {
-            color: #000000;
-            text-decoration: none;
-        }
-        .container .info span .fa {
-            color: #EF3B3A;
-        }
+        .signup2.nice-select
+
 
     </style>
-
-    <script>
-        function doLoginUserCheck(f) {
-
-            if (f.user_id.value === "") {
-                alert("아이디를 입력하세요.");
-                f.user_id.focus();
+    <script type="text/javascript">
+        //회원가입 정보의 유효성 체크하기
+        function doRegUserCheck(f){
+            if (f.user_email.value === ""){
+                alert("아이디를 입력하세요");
+                f.user_email.focus();
                 return false;
             }
 
-            if (f.password.value === "") {
-                alert("비밀번호를 입력하세요.");
-                f.password.focus();
+            if (f.pwd_user.value === ""){
+                alert("비밀번호를 입력하세요");
+                f.pwd_user.focus();
                 return false;
             }
 
         }
     </script>
-
-
-
-
 
 
 </head>
@@ -159,7 +89,7 @@
 <div class="humberger__menu__overlay"></div>
 <div class="humberger__menu__wrapper">
     <div class="humberger__menu__logo">
-        <a href="#"><img src="ogani-master/img/img/logo.png" alt=""></a>
+        <a href="#"><img src="/ogani-master/img/logo.png" alt=""></a>
     </div>
     <div class="humberger__menu__cart">
         <ul>
@@ -170,7 +100,7 @@
     </div>
     <div class="humberger__menu__widget">
         <div class="header__top__right__language">
-            <img src="ogani-master/img/language.png" alt="">
+            <img src="/ogani-master/img/language.png" alt="">
             <div>English</div>
             <span class="arrow_carrot-down"></span>
             <ul>
@@ -179,7 +109,7 @@
             </ul>
         </div>
         <div class="header__top__right__auth">
-            <a href="/login/login"><i class="fa fa-user"></i> Login</a>
+            <a href="/login/login"><i class="fa fa-user"></i> Login </a>
         </div>
     </div>
     <nav class="humberger__menu__nav mobile-menu">
@@ -219,41 +149,74 @@
 <!-- Header Section End -->
 
 
+
 <!--  section 합치는 부분  들어갈 부분 -->
 
 
-<section class="contact-form section-padding3">
-    <div class="login-page">
-        <div class="form">
-            <h3>LOGIN USER</h3>
-            <br>
-            <form class="login-form" method="post" action="/login/getUserLoginCheck" onsubmit="return doLoginUserCheck(this);">
-                <input type="text" name="email_user" placeholder="username"/>
-                <input type="password" name="pwd_user" placeholder="password"/>
-                <button type="submit" value="LOGIN">login</button>
+<section class="pricing-table section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-top text-center">
+                    <h2> 메일 인증받기  </h2>
+                    <p>Please verify your email first</p>
+                </div>
+            </div>
+        </div>
 
-                <p class="message">Not registered? <a href="/signup/SignupMain">Create an account</a></p>
-            </form>
+        <!--            메일 인증 받기   -->
+        <div>
+            <div class="signup2">
+                <%--<form name="f" method="post" action="/signup/SignupUser" onsubmit="return doRegUserCheck(this);">
+                    &lt;%&ndash; onfocus 클릭하면 바뀜 &ndash;%&gt;
+                    <input type="email" name="email_user" placeholder="E-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'E-Mail'" required><br>
+                        <button type="submit">인증번호 발송</button>
+                        <br><br>
+                </form>--%>
+
+
+
+                <%--<script>
+                    fetch('/signup/signupMain')
+                        .then((response)=>{
+                            return response.json()
+                        })
+                        .then((결과)=>{
+                            console.log(결과)
+                        })
+                </script>--%>
+
+
+                    <form method="post" action="/signup/UserMailCheck/MailCodeCheck" onsubmit="">
+                        <input type="email" name="email_user" id="userEmail" placeholder="E-Mail" ><%--받는사람--%>
+                        <input type="submit" id="button" value=" 이메일 인증받기 ">
+                        <br><br><br>
+
+                        <%--<input type="submit" value="회원가입하러가기">--%>
+                    </form>
+
+
+                    <%--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                        $('#button').click(function (){
+                            const value = $("userEmail").val();
+                            $("EmailOk").val(value);
+                        })
+                    </script>--%>
+
+
+
+              <%--  <form>
+                    <input type="password" name="email_auth" placeholder="Certification Number" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Cerfication Number'" required><br><br>
+
+                    <br><br>
+                    <button type="submit" class="signupbutton"> 회원가입 하러가기 </button>
+                </form>--%>
+            </div>
         </div>
     </div>
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<!-- Pricing Table End -->
 
 
 
@@ -266,17 +229,16 @@
 <!-- Footer Section End -->
 
 <!-- Js Plugins -->
-<script src="ogani-master/js/jquery-3.3.1.min.js"></script>
-<script src="ogani-master/js/bootstrap.min.js"></script>
-<script src="ogani-masterjs/jquery.nice-select.min.js"></script>
-<script src="ogani-master/js/jquery-ui.min.js"></script>
-<script src="ogani-master/js/jquery.slicknav.js"></script>
-<script src="ogani-master/js/mixitup.min.js"></script>
-<script src="ogani-master/js/owl.carousel.min.js"></script>
-<script src="ogani-master/js/main.js"></script>
+<script src="./ogani-master/js/jquery-3.3.1.min.js"></script>
+<script src="./ogani-master/js/bootstrap.min.js"></script>
+<script src="./ogani-master/js/jquery.nice-select.min.js"></script>
+<script src="./ogani-master/js/jquery-ui.min.js"></script>
+<script src="./ogani-master/js/jquery.slicknav.js"></script>
+<script src="./ogani-master/js/mixitup.min.js"></script>
+<script src="./ogani-master/js/owl.carousel.min.js"></script>
+<script src="./ogani-master/js/main.js"></script>
 
 
 
 </body>
-
 </html>

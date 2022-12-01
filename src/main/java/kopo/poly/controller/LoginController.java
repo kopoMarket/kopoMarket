@@ -1,13 +1,19 @@
 package kopo.poly.controller;
 
+import kopo.poly.dto.MailDTO;
 import kopo.poly.dto.MarketInfoDTO;
 import kopo.poly.dto.UserInfoDTO;
+import kopo.poly.service.IMailService;
 import kopo.poly.service.IMarketInfoService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.service.impl.MarketInfoService;
+import kopo.poly.service.impl.UserInfoService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
+import kopo.poly.util.MailCodeUtil;
+import kopo.poly.util.TempPwdUtill;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.experimental.PackagePrivate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -15,10 +21,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -32,6 +40,9 @@ public class LoginController {
 
     @Resource(name = "MarketInfoService")
     private IMarketInfoService marketInfoService;
+
+    @Resource(name = "MailService")
+    private IMailService mailService;
 
     @GetMapping(value = "MyPage")
     public String MyPage(HttpSession session) {
@@ -48,7 +59,7 @@ public class LoginController {
 
         log.info(this.getClass().getName() + "logout end ");
 
-        return "/signup/logout";
+        return "/login/logout";
     }
 
 
@@ -60,7 +71,7 @@ public class LoginController {
     public String loginMarket(){
         log.info(this.getClass().getName()+" loginmarket letssssgo!");
 
-        return "/signup/loginMarket";
+        return "/login/loginMarket";
     }
 
     @PostMapping(value = "getMarketLoginCheck")
@@ -154,7 +165,12 @@ public class LoginController {
     public String loginForm() {
         log.info(this.getClass().getName() + ".user/loginForm ok!");
 
-        return "/signup/loginUser";
+        return "/login/loginUser";
+    }
+    @PostMapping(value = "loginUser")
+    public String loginUserForm(){
+        log.info(this.getClass().getName()+"userLoign Form Post lessssgo");
+        return "/login/loginUser";
     }
 
     /**
@@ -288,7 +304,146 @@ public class LoginController {
     }
 
 
+    /** 유저 비밀번호 찾기 페이지 (1. 이메일 입력받는 페이지 ) */
+    @GetMapping(value = "/ForgotPwdUser")
+    public String ForgotUserPassword() throws Exception{
+        log.info(this.getClass().getName()+"forgotUserPassword start!!");
 
+        log.info(this.getClass().getName()+"forgotUserPassword End!!");
+        return "/login/pwd/ForgotPwdUser";
+    }
+
+    /** 비밀번호 찾기 페이지 (2. 이메일이 회원이면 코드를 전송하고 아니면 전송하지 않음  ) */
+    @PostMapping(value = "/ForgotPwdUser/temp_pwd")
+    public String temp_pwd(HttpServletRequest request, ModelMap model,HttpSession session) throws Exception{
+        log.info(this.getClass().getName() + " Temp_pwd start !~!");
+        String url = "";
+        String msg = "";
+
+        //웹 URL로부터 전달받는 값 -->
+        String email_user = CmmUtil.nvl(request.getParameter("email_user"));
+        log.info("비밀번호 찾을 이메일 : " + email_user);
+
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
+
+        userInfoDTO.setEmail_user(email_user);
+
+        //인증번호를 보낼 때 아이디값 있는지 확인해줘야함
+        Map<String, String> map = userInfoService.userPCodeCheck(userInfoDTO);
+
+        session.setAttribute("email_user",email_user);
+        session.setAttribute("emailCode",map.get("emailCode"));
+
+
+        if (map.get("res").equals("1")){
+            log.info(this.getClass().getName()+"pwd code success");
+            url = "/login/PCodeCheck";
+            msg = "인증번호 발송 성공, 인증번호를 확인하고 입력해주세요. ";
+        }else {
+            log.info(this.getClass().getName()+"pwd code fail");
+            url = "/login/ForgotPwdUser";
+            msg = "회원이 아닙니다. 회원가입먼저 해주세요";
+        }
+        //model.addAttribute("res",String.valueOf(res));
+        //model.addAttribute("email_user",email_user);
+        model.addAttribute("msg",msg);
+        model.addAttribute("url",url);
+
+
+        log.info(this.getClass().getName() + "Temp_Pwd end !~! ");
+        return "/redirect";
+    }
+    /** 비밀번호 찾기 페이지 ( 3 : 전송됐을시 pcode 체크 페이지  */
+    @GetMapping("/PCodeCheck")
+    public String PCodeCheck(){
+        log.info(this.getClass().getName()+"pcodeCheck start !! ");
+
+        return "/login/pwd/TempPwdUser";
+    }
+
+
+    /** 비밀번호 확인 체크 페이지 3. */
+    @PostMapping(value = "/ForgotPwdUser/userPCodeCheck")
+    public String userPCodeCheck(HttpServletRequest request, HttpSession session, ModelMap model) throws Exception{
+        log.info(this.getClass().getName() + " userPCodeCheck start !! ");
+
+        String msg = null;
+        String url = "";
+        //웹화면에서 받는 정보를 저장할 변수  ( 인증번호만 입력받음 )
+        //인증번호를 두개 비교
+        String pwd_code2 = CmmUtil.nvl(request.getParameter("pwd_code"));
+        String pwd_code1 = (String) session.getAttribute("emailCode");
+        log.info("pwdcode1 : "+ pwd_code1);
+        log.info("pwdcode2 : "+ pwd_code2);
+
+        if (pwd_code1.equals(pwd_code2)){
+            msg = "확인되었습니다. 새로운 비밀번호를 입력해주세요";
+            url = "/login/ForgotPwdUser/newPwdUser";
+        }else {
+            msg = "인증번호가 틀렸습니다. 처음부터 다시 시도해주세요.";
+            url = "/login/ForgotPwdUser";
+        }
+        model.addAttribute("msg",msg);
+        model.addAttribute("url",url);
+
+        return "/redirect";
+    }
+
+    /** 비밀번호 (4. 비밀번호 변경 페이지 ) */
+    @GetMapping(value = "/ForgotPwdUser/newPwdUser")
+    public String ChangePwdUserGet(){
+        return "/login/pwd/NewPwdUser";
+    }
+    @PostMapping(value = "/ForgotPwdUser/newPwdUser")
+    public String ChangePwdUser(HttpServletRequest request,HttpSession session, ModelMap model) throws Exception {
+        log.info(this.getClass().getName()+"newPwdUser start!!");
+
+        String msg="";
+        String url="";
+
+        String newPwd1 = CmmUtil.nvl(request.getParameter("newPwd1"));
+        String newPwd2 = CmmUtil.nvl(request.getParameter("newPwd2"));
+        log.info("newPWD1 : " + newPwd1);
+        log.info("newPWD2 : " + newPwd2);
+
+        UserInfoDTO uDTO = new UserInfoDTO();
+        uDTO.setEmail_user((String) session.getAttribute("email_user"));
+        uDTO.setPwd_user(EncryptUtil.encHashSHA256(newPwd1)); //다시 해시알고리즘으로 저장
+        log.info("emailUser : " + uDTO.getEmail_user());
+
+        userInfoService.newPwdUser(uDTO);
+
+        if (newPwd1.equals(newPwd2)) {
+            msg = "비밀번호가 정상정으로 변경되었습니다. 로그인 화면으로 돌아가 로그인해주세요.";
+            url = "/login/loginUser";
+        }else {
+            msg = "다시 시도해주세요 ";
+            url = "/ForgotPwdUser/newPwdUser";
+        }
+
+        model.addAttribute("msg",msg);
+        model.addAttribute("url",url);
+
+
+
+        return "/redirect";
+    }
+
+
+
+
+
+
+    /**
+     *
+     * 마켓 비밀번호 찾기
+     *
+     * **/
+    @GetMapping(value = "/login/ForgotPwdMarket")
+    public String ForgotPwdMarket(){
+        //마켓은 사업자등록번호 받아서 등록번호만 입력하면 넣을 수 있도록
+        return "";
+    }
 
 
 

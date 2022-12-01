@@ -8,19 +8,23 @@
                                EMAIL_MARKET,
                                PWD_MARKET,
                                NAME_MARKET,
-                               NAME_BOSS,
                                ADDR1_MARKET,
                                ADDR2_MARKET,
-                               CNUM_MARKET
+                               CNUM_MARKET,
+                               B_NO,
+                               START_DT,
+                               P_NM
         )
         VALUES (
                 #{email_market},
                 #{pwd_market},
                 #{name_market},
-                #{name_boss},
                 #{addr1_market},
                 #{addr2_market},
-                #{cnum_market}
+                #{cnum_market},
+                #{b_no},
+                #{start_dt},
+                #{p_nm}
                )
     </insert>
     <!--ㅇㅣ메일로 회원가입 중복 방지하기 -->
