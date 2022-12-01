@@ -1,7 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    String p_nm = (String) session.getAttribute("p_nm");
-%>
+
 <!DOCTYPE html>
 <html lang="zxx">
 
@@ -40,7 +38,7 @@
     <style>
         .signup2 {
 
-            height: 850px;
+            height: 500px;
             text-align: center;
         }
         .signupbutton {
@@ -54,23 +52,22 @@
             border-radius: 20px;
         }
 
-        .form {
-            position: relative;
-            z-index: 1;
-            background: #FFFFFF;
-            max-width: 700px;
-            margin: 0 auto 100px;
-            padding: 70px;
-            text-align: center;
-            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-        }
-
-        .title{
-            font-size: 1.3em;
-
-        }
-
     </style>
+
+
+    <%-- ㅅㅏ업자등록번호 api --%>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!--sweet alert -->
+    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+
+
+
+
     <%-- 카카오 주소 api --%>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script type="text/javascript">
@@ -134,53 +131,85 @@
             }).open();
         }
 
-        function email_send() {
-            $.ajax({
-                type: "POST",
-                url: "/signup/SignupMarket/email_send",
-                data: $("#email_market"),
-                success(data) {
-                    console.log(data);
-                    let Random_Pin = data.Random_Pin;
-                    let result = data.result;
-                    let emailCheck = data.emailCheck;
-                    console.log(Random_Pin);
-                    console.log(result);
-                    console.log(emailCheck);
 
-                    if (emailCheck == 0) {
-                        $("#email_text").text("이미 가입된 이메일입니다.");
-                        $("#email_text").css('color', 'red');
+
+        // 사업자등록번호 조회 api
+        function marketCheck() {
+            let b_no = document.getElementById("b_no").value;
+            let start_dt = document.getElementById("start_dt").value;
+            let p_nm = document.getElementById("p_nm").value;
+            let data = {
+                "businesses": [
+                    {
+                        "b_no": b_no,
+                        "start_dt": start_dt,
+                        "p_nm": p_nm,
                     }
-                    else if (emailCheck == 1) {
-                        if (result == 1) {
-                            $("#email_text").text("입력하신 이메일로 인증번호를 발송했습니다.");
-                            $("#email_text").css('color', 'blue');
-                            $("#btn_reg").attr("type", "submit");
-                        } else {
-                            $("#email_text").text("이메일 발송해 실패하였습니다 다시 확인해 주세요.");
-                            $("#email_text").css('color', 'red');
-                            $("#btn_reg").attr("type", "button");
-                        }
-                    } else {
-                        $("#email_text").text("다시 시도해주세요.");
-                        $("#email_text").css('color', 'red');
-                    }
-                    $("#auth_email").on("propertychange change keyup paste input", function () {
-                        if (Random_Pin == $("#auth_email").val()) {
-                            $("#auth_res").text("인증번호가 일치 합니다.");
-                            $("#auth_res").css('color', 'blue');
-                            $("#btn_reg").attr("type", "submit");
-                        } else {
-                            $("#auth_res").text("인증번호를 다시 확인해 주세요");
-                            $("#auth_res").css('color', 'red');
-                            $("#btn_reg").attr("type", "button");
-                        }
-                    });
-                }
+                ]
+            };
+            $.ajax({
+                url: "http://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=i6xokwKsdvlwERvOibTsIL6z%2Fx7Y1f3bZZSapli7HQFff1hKKi0qpR1Avr9aof8KZRK4TA%2FqzJT37gpPvxCt7Q%3D%3D",  // serviceKey 값을 xxxxxx에 입력
+                type: "POST",
+                data: JSON.stringify(data), // json 을 string으로 변환하여 전송
+                dataType: "JSON",
+                contentType: "application/json",
+                accept: "application/json",
+                success: function (result) {
+                    console.log(result.data[0].valid);
+                    if(result.data[0].valid =='01') {
+                        swal('정상적인 사업자입니다.', "확인눌러 회원가입을 진행해주세요.", 'success')
+                            .then(function(){
+                                var form = document.createElement("form");
+
+                                form.setAttribute("charset", "UTF-8");
+
+                                form.setAttribute("method", "Post");  //Post 방식
+
+                                form.setAttribute("action", "/signup/SignupMarket");
+
+                                var hiddenField = document.createElement("input");
+                                hiddenField.setAttribute("type", "hidden");
+                                hiddenField.setAttribute("name", "b_no");
+                                hiddenField.setAttribute("value", b_no);
+
+                                form.appendChild(hiddenField);
+
+                                var hiddenField2 = document.createElement("input");
+                                hiddenField2.setAttribute("type", "hidden");
+                                hiddenField2.setAttribute("name", "start_dt");
+                                hiddenField2.setAttribute("value", start_dt);
+
+                                form.appendChild(hiddenField2);
+
+                                var hiddenField3 = document.createElement("input");
+                                hiddenField3.setAttribute("type", "hidden");
+                                hiddenField3.setAttribute("name", "p_nm");
+                                hiddenField3.setAttribute("value", p_nm);
+
+                                form.appendChild(hiddenField3);
+                                document.body.appendChild(form);
+                                form.submit();
+                            });
+                    }else {
+                        swal('사업자를 다시 확인해주세요', "확인눌러 다시 진행해주세요", 'error')
+
+                    }},
+
+
+
+                error: function (result) {
+                    console.log(result.responseText); //responseText의 에러메세지 확인
+                    if(result.data[0].valid =='02'){
+                        swal('사업자를 다시 확인해주세요', "확인눌러 다시 진행해주세요", 'error')
+
+                    }else{
+                        swal('정상적인 사업자입니다.', "확인눌러 회원가입을 진행해주세요.", 'success')
+                            .then(function(){
+                                location.href="/signup/SignupMarket";
+                            });
+                    }}
             });
         }
-
     </script>
 
 
@@ -268,44 +297,18 @@
         </div>
 
         <!--            회원가입 양식 폼 집어넣기   -->
-        <div class="form">
+        <div>
             <div class="signup2">
-                <form method="post" action="/signup/insertMarketInfo" onsubmit="return doRegMarketCheck(this);">
-                    <p class="title"> 이메일 </p>
-                    <input type="email" name="email_market" id="email_market" placeholder="이메일" onfocus="this.placeholder = ''" onblur="this.placeholder = 'E-mail'" required>
-                    <button type="button"> 인증 </button>
-                    <br><br>
-
-                    <%-- 이메일 인증 아직 확인 안함 --%>
-                    <input type="text" name="emailCodeMarket" placeholder="인증번호">
-                    <div id="email_text"></div><br><br>
-
-                    <p class="title"> 비밀번호 </p>
-                    <input type="password" name="pwd_market" placeholder="비밀번호" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" required><br>
-                    <input type="password" name="pwd2_market" placeholder="비밀번호확인" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Confirm Password'" required><br><br>
-
-                    <p class="title"> 마트이름 </p>
-                    <input type="text" name="name_market" placeholder="마트이름" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Name of Market'" required><br><br>
-
-                    <p class="title"> 대표자 성함 </p>
-                    <input type="text" name="name_boss" placeholder="대표자 성함" value="<%=p_nm%>" style="text-align: center" readonly onblur="this.placeholder = 'Name of Boss'" required><br><br>
-
-
-                    <label>
-                        <p class="title"> 우편번호 </p>
-                        <input type="text" name="addr1_market" placeholder="우편번호" readonly style="text-align: center">
-                        <input type="button" value="우편번호" onclick="kakaoPost(this.form)"/>
-                    </label><br>
-                    <label><input type="text" name="addr2_market" placeholder="상세주소" style="text-align: center"></label><br><br>
-
-                    <p class="title"><strong> 전화번호 </strong> </p>
-                    <label><input type="text" name="cnum_market" placeholder="010-1234-5678" style="text-align: center"></label><br><br>
+                <form method="post" action="/signup/SignupMarket" onsubmit="return doRegMarketCheck(this);">
+                    <p>사업자 등록번호</p>
+                    <input type="text" id="b_no" name="b_no" placeholder=" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'-'제거 10자리" onblur="this.placeholder = '-를 제거하고 입력하세요'"><br><br>
+                    <p>개업일자</p>
+                    <input type="text" id="start_dt" name="start_dt" placeholder=" &nbsp;&nbsp;&nbsp;&nbsp;'YYYYMMDD'형식 " onblur="this.placeholder='YYYYMMDD 형식'"><br><br>
+                    <p>대표자 성명</p>
+                    <input type="text" id="p_nm" name="p_nm" placeholder="대표자 성명" onblur="this.placeholder='대표자성명'"><br><br>
+                    <button type="button" class="signupbutton" value="인증하기" onclick="marketCheck()";> 인증하기</button>
 
                     <br><br>
-                    <label><button type="submit" class="signupbutton"> 회원가입 </button></label>
-
-
-
 
                 </form>
             </div>
@@ -314,27 +317,6 @@
 
     </div>
 </section>
-<!-- Pricing Table End -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

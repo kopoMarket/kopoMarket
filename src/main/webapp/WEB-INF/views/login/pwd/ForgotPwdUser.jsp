@@ -36,17 +36,114 @@
 
 
     <style>
-        .single-box1 {
-            background: #FAAC58;
+        @import url(https://fonts.googleapis.com/css?family=Roboto:300);
+
+        .login-page {
+            width: 360px;
+            padding: 8% 0 0;
+            margin: auto;
+        }
+        .form {
+            position: relative;
+            z-index: 1;
+            background: #FFFFFF;
+            max-width: 360px;
+            margin: 0 auto 100px;
+            padding: 45px;
+            text-align: center;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+        }
+        .form input {
+            font-family: "Roboto", sans-serif;
+            outline: 0;
+            background: #f2f2f2;
+            width: 100%;
+            border: 0;
+            margin: 0 0 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .form button {
+            font-family: "Roboto", sans-serif;
+            text-transform: uppercase;
+            outline: 0;
+            background: #4CAF50;
+            width: 100%;
+            border: 0;
+            padding: 15px;
+            color: #FFFFFF;
+            font-size: 14px;
+            -webkit-transition: all 0.3 ease;
+            transition: all 0.3 ease;
+            cursor: pointer;
+        }
+        .form button:hover,.form button:active,.form button:focus {
+            background: #43A047;
+        }
+        .form .message {
+            margin: 15px 0 0;
+            color: #b3b3b3;
+            font-size: 12px;
+        }
+        .form .message a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .form .register-form {
+            display: none;
         }
 
-
-        .single-box2 {
-            background: green;
+        .container:before, .container:after {
+            content: "";
+            display: block;
+            clear: both;
         }
-
+        .container .info {
+            margin: 50px auto;
+            text-align: center;
+        }
+        .container .info h1 {
+            margin: 0 0 15px;
+            padding: 0;
+            font-size: 36px;
+            font-weight: 300;
+            color: #1a1a1a;
+        }
+        .container .info span {
+            color: #4d4d4d;
+            font-size: 12px;
+        }
+        .container .info span a {
+            color: #000000;
+            text-decoration: none;
+        }
+        .container .info span .fa {
+            color: #EF3B3A;
+        }
 
     </style>
+
+    <script>
+        function doLoginUserCheck(f) {
+
+            if (f.user_id.value === "") {
+                alert("아이디를 입력하세요.");
+                f.user_id.focus();
+                return false;
+            }
+
+            if (f.password.value === "") {
+                alert("비밀번호를 입력하세요.");
+                f.password.focus();
+                return false;
+            }
+
+        }
+    </script>
+
+
+
 
 
 
@@ -62,7 +159,7 @@
 <div class="humberger__menu__overlay"></div>
 <div class="humberger__menu__wrapper">
     <div class="humberger__menu__logo">
-        <a href="#"><img src="/ogani-master/img/img/logo.png" alt=""></a>
+        <a href="#"><img src="ogani-master/img/img/logo.png" alt=""></a>
     </div>
     <div class="humberger__menu__cart">
         <ul>
@@ -73,7 +170,7 @@
     </div>
     <div class="humberger__menu__widget">
         <div class="header__top__right__language">
-            <img src="/ogani-master/img/language.png" alt="">
+            <img src="ogani-master/img/language.png" alt="">
             <div>English</div>
             <span class="arrow_carrot-down"></span>
             <ul>
@@ -118,36 +215,45 @@
 <!-- Humberger End -->
 
 <!-- Header Section Begin -->
-<%@include file="../includes/header.jsp"%>
+<%@include file="../../includes/header.jsp"%>
 <!-- Header Section End -->
 
-<!--  section 합치는 부분 -->
-<!--    나중에 마트 로그인 , 유저 로그인 으로 나눠도 좋을것 같음  -->
-<section class="pricing-table section-padding">
-    <div class="pricing-box section-padding3">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="single-box1 text-center mb-4 mb-md-0">
-                        <h3>마트 유저 </h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.</p>
-                        <a href="/login/loginMarket" class="template-btn">Market Login</a>
-                        <a href="/signup/marketBnumCheck" class="template-btn">Market signUp</a>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="single-box2 text-center">
-                        <h3>일반 회원 유저</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.</p>
-                        <a href="/login/loginUser" class="template-btn">User Login</a>
-                        <a href="/signup/UserMailCheck/" class="template-btn">User SignUp</a>
-                    </div>
-                </div>
-            </div>
+
+<!--  section 합치는 부분  들어갈 부분 -->
+
+
+<section class="contact-form section-padding3">
+    <div class="login-page">
+        <div class="form">
+            <h3>Forgot Password</h3>
+            <br>
+            <form class="login-form" method="post" action="/login/ForgotPwdUser/temp_pwd" onsubmit="return doLoginUserCheck(this);">
+                <p> 회원가입시 등록한 이메일을 입력하세요 </p>
+                <input type="text" name="email_user" id="email_user" placeholder="User_Email"/>
+                <button type="submit" value="Go to Check Code"><font size="2em"> 인증코드 받기 </font> </button>
+
+
+                <p class="message">Not registered? <a href="/signup/SignupMain">Create an account</a></p>
+            </form>
         </div>
     </div>
 </section>
-<!-- Pricing Table End -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -158,13 +264,13 @@
 
 
 <!-- Footer Section Begin -->
-<%@include file="../includes/footer.jsp"%>
+<%@include file="../../includes/footer.jsp"%>
 <!-- Footer Section End -->
 
 <!-- Js Plugins -->
 <script src="ogani-master/js/jquery-3.3.1.min.js"></script>
 <script src="ogani-master/js/bootstrap.min.js"></script>
-<script src="ogani-master/js/jquery.nice-select.min.js"></script>
+<script src="ogani-masterjs/jquery.nice-select.min.js"></script>
 <script src="ogani-master/js/jquery-ui.min.js"></script>
 <script src="ogani-master/js/jquery.slicknav.js"></script>
 <script src="ogani-master/js/mixitup.min.js"></script>

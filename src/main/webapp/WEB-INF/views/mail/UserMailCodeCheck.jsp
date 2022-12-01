@@ -1,11 +1,15 @@
-<%@ page import="kopo.poly.dto.MailDTO" %>
-<%@ page import="kopo.poly.util.CmmUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="kopo.poly.util.CmmUtil" %>
 <%
-    String email_user = (String) request.getAttribute("email_user");
+    String jspRes = CmmUtil.nvl((String)request.getAttribute("res"), "0");
+
+    String email_user = CmmUtil.nvl(request.getParameter("email_user"));
 %>
 <!DOCTYPE html>
 <html lang="zxx">
+
+
+<%--메일 인증 --%>
 
 <head>
     <meta charset="UTF-8">
@@ -55,23 +59,10 @@
             width: 160px;
             border-radius: 20px;
         }
-
-
-        .form {
-            position: relative;
-            z-index: 1;
-            background: #FFFFFF;
-            max-width: 700px;
-            margin: 0 auto 100px;
-            padding: 70px;
-            text-align: center;
-            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-        }
-
+        .signup2.nice-select
 
 
     </style>
-
     <script type="text/javascript">
         //회원가입 정보의 유효성 체크하기
         function doRegUserCheck(f){
@@ -86,61 +77,7 @@
                 f.pwd_user.focus();
                 return false;
             }
-            if (f.pwd2_user.value === ""){
-                alert("비밀번호를 확인하세요");
-                f.pwd2_user.focus();
-                return false;
-            }
-            //비밀번호 확인
-            if (f.pwd_user.value !== f.pwd2_user.value){
-                alert("비밀번호와 비밀번호확인이 일치하지 않습니다.")
-                f.password.focus();
-                return false;
-            }
 
-            if (f.name_user.value === ""){
-                alert("이름을 입력하세요");
-                f.name_user.focus();
-                return false;
-            }
-            if (f.gender.value === ""){
-                alert("성별을 선택하세요");
-                f.gender.focus();
-                return false;
-            }
-            if (f.age_user.value === ""){
-                alert("나이를 입력하세요");
-                f.age_user.focus();
-                return false;
-            }
-            if (f.type_veganism.value === ""){
-                alert("비건임을 확인하세요");
-                f.type_veganism.focus();
-                return false;
-            }
-
-        }
-
-
-        /** 비밀번호 일치확인 */
-        function pwdConfirm() {
-            /* 비밀번호, 비밀번호 확인 입력창에 입력된 값을 비교해서 같다면 비밀번호 일치, 그렇지 않으면 불일치 라는 텍스트 출력.*/
-            /* document : 현재 문서를 의미함. 작성되고 있는 문서를 뜻함. */
-            /* getElementByID('아이디') : 아이디에 적힌 값을 가진 id의 value를 get을 해서 password 변수 넣기 */
-            var pwd_user = document.getElementById('pwd_user');					//비밀번호
-            var pwd2_user = document.getElementById('pwd2_user');	//비밀번호 확인 값
-            // id로 받아옴
-            var msg = document.getElementById('pwdCheck');				//확인 메세지
-            var correctColor = "#00ff00";	//맞았을 때 출력되는 색깔.
-            var wrongColor ="#ff0000";	//틀렸을 때 출력되는 색깔
-
-            if(pwd_user.value == pwd2_user.value){//password 변수의 값과 passwordConfirm 변수의 값과 동일하다.
-                msg.style.color = correctColor;/* span 태그의 ID(confirmMsg) 사용  */
-                msg.innerHTML ="비밀번호 일치";/* innerHTML : HTML 내부에 추가적인 내용을 넣을 때 사용하는 것. */
-            }else{
-                msg.style.color = wrongColor;
-                msg.innerHTML ="비밀번호 불일치";
-            }
         }
     </script>
 
@@ -226,60 +163,40 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-top text-center">
-                    <h2>일반 유저 회원가입 </h2>
-                    <p>gormless cheeky bugger he nicked it golly gosh a arse show off show off</p>
+                    <h2> 메일 인증받기  </h2>
+                    <p>Please verify your email first</p>
                 </div>
             </div>
         </div>
 
-        <!--            회원가입 양식 폼 집어넣기   -->
-        <div class="form">
+        <!--            메일 인증 받기   -->
+        <div>
             <div class="signup2">
-                <form name="f" method="post" action="/signup/insertUserInfo" onsubmit="return doRegUserCheck(this);">
-                     유저 회원가입하기<br><%-- onfocus 클릭하면 바뀜 --%>
-                    <input type="email" name="email_user" value="<%=email_user%>" readonly onfocus="this.placeholder = ''" onblur="this.placeholder = 'E-Mail'" required><br><br>
 
-                    <div><%-- 비밀번호 확인 --%>
-                        <input type="password" name="pwd_user" id="pwd_user" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" required><br>
-                        <input type="password" name="pwd2_user" id="pwd2_user" placeholder="Confirm Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Confirm Password'" onkeyup="pwdConfirm()" required>
-                        <p id="pwdCheck"></p>
-                    </div><br>
+                    <%
+                        if (jspRes.equals("1")){
+                            out.println(email_user+"님에게 인증번호가 전송되었습니다. \n 메일을 확인하고 인증번호를 입력해주세요 \n\n");
+                        }else {
+                            out.println(email_user+"님에게 인증번호가 전송되지않았습니다. 다시한번 시도해주세요 \n\n");
+                        }
+                    %>
 
+                <form method="post" action="/signup/userMailCodeCheck" onsubmit=""><br><br>
+                    <input type="text" name="email_user" value="<%=email_user%>" style="display: none;">
+                    <input type="text" name="mail_code" id="MailCode" placeholder="E-Mail_Code" onfocus="this.placeholder=''" onblur="this.placeholder = 'E-Mail'" required>
+                    <input type="submit" value="회원가입 하러가기">
 
-                    <input type="text" name="name_user" placeholder="Name"onfocus="this.placeholder = ''" onblur="this.placeholder = 'Name'" required><br><br>
-                    <input type="radio" name="gender" value="man"> 남 &nbsp;&nbsp;&nbsp;
-                    <input type="radio" name="gender" value="woman"> 여<br><br>
-                    <input type="text" name="age_user" placeholder="Age"onfocus="this.placeholder = ''" onblur="this.placeholder = 'Age'" required> <br><br>
-
-                    비건여부<br><br>
-                    <div style="padding-left: 37%;">
-                        <select name="type_veganism">
-                            <option value="noVegan"> 해당사항 없음 </option>
-                            <option value="vegan"> 비건 Vegan </option>
-                            <option value="lacto"> 락토 Lacto </option>
-                            <option value="ovo"> 오보 Ovo </option>
-                            <option value="lacto-ovo"> 락토-오보 Lacto-Ovo </option>
-                            <option value="pesco"> 페스코 Pesco </option>
-                            <option value="pollo"> 폴로 Pollo </option>
-                            <option value="flexitarian"> 플렉시테리언 Flexitarian </option>
-                        </select>
-                    </div>
-
-                    <br><br><br>
-                    <button type="submit" class="signupbutton"> 회원가입 </button>
 
                 </form>
+
+
+
+
             </div>
         </div>
-
-
-
-
     </div>
 </section>
 <!-- Pricing Table End -->
-
-
 
 
 
